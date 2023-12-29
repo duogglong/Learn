@@ -13,7 +13,7 @@ def login():
     }
 
     try:
-        response = requests.post(url_login, data=data_request_login, timeout=15)  # Set a timeout if needed
+        response = requests.post(url_login, data=data_request_login, timeout=5)  # Set a timeout if needed
         response.raise_for_status()
 
         access_token = response.json().get("access_token")
