@@ -1,5 +1,6 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor
+import docker
 
 def login():
     url_login = "https://sinhvien1.tlu.edu.vn:8098/education/oauth/token"
@@ -37,10 +38,19 @@ def make_request(access_token, _):
         # Log the exception or do nothing to ignore the error
         pass
 
+def stop_container(service_name):
+    client = docker.from_env()
+    containers = client.containers.list(filters={"label": f"com.docker.compose.service={service_name}"})
+
+    for container in containers:
+        container.stop()
+
 def main():
     access_token = login()
     if access_token is None:
         print("Login failed. Exiting.")
+        # Gọi lệnh docker stop để dừng container
+        stop_container("my_python_app")
         return
     
     # Number of parallel requests
@@ -55,6 +65,7 @@ def main():
         futures = [executor.submit(make_request, access_token, _) for _ in range(num_requests)]
 
     print("All requests submitted")
-
+    stop_container("my_python_app")
+    
 if __name__ == "__main__":
     main()
