@@ -32,7 +32,7 @@ def make_request(access_token, _):
 
     print("aaa")
     try:
-        requests.get(url, headers=headers, timeout=2)
+        requests.get(url, headers=headers, timeout=1)
     except requests.exceptions.RequestException as e:
         # Log the exception or do nothing to ignore the error
         pass
@@ -44,7 +44,7 @@ def main():
         return
     
     # Number of parallel requests
-    num_requests = 1000000000
+    num_requests = 100000
 
     # Set max_workers to a higher value
     max_workers = 6500
