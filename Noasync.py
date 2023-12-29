@@ -17,7 +17,7 @@ access_token = response.json().get("access_token")
 print(f"Access Token: {access_token}")
 
 # Spam start
-url = "https://sinhvien1.tlu.edu.vn:8098/education/api/semester/1/100"
+url = "https://sinhvien1.tlu.edu.vn:8098/education/api/studentsubjectmark/checkFinishedEducationProgramOfStudent/tree/studentId/132"
 headers = {
     "Authorization": "Bearer " + access_token
 }

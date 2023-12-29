@@ -3,7 +3,7 @@ services:
   my_python_app:
     image: my-python-app
     restart: always
-    scale: 5
+    scale: 15
 
 # docker build -t my-python-app .
 # docker-compose up -d --scale my_python_app=5
