@@ -1,5 +1,6 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor
+import docker
 
 def login():
     url_login = "https://sinhvien1.tlu.edu.vn:8098/education/oauth/token"
@@ -37,25 +38,34 @@ def make_request(access_token, _):
         # Log the exception or do nothing to ignore the error
         pass
 
+def stop_container(service_name):
+    client = docker.from_env()
+    containers = client.containers.list(filters={"label": f"com.docker.compose.service={service_name}"})
+
+    for container in containers:
+        container.stop()
+
 def main():
-    while True:
-        access_token = login()
-        if access_token is None:
-            print("Login failed. Retrying.")
-            continue
+    access_token = login()
+    if access_token is None:
+        print("Login failed. Exiting.")
+        # Gọi lệnh docker stop để dừng container
+        stop_container("my_python_app")
+        return
+    
+    # Number of parallel requests
+    num_requests = 100000
 
-        # Number of parallel requests
-        num_requests = 100000
+    # Set max_workers to a higher value
+    max_workers = 6500
 
-        # Set max_workers to a higher value
-        max_workers = 6500
+    # Use ThreadPoolExecutor to make asynchronous requests
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Use submit instead of map to fire off asynchronous requests
+        futures = [executor.submit(make_request, access_token, _) for _ in range(num_requests)]
 
-        # Use ThreadPoolExecutor to make asynchronous requests
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            [executor.submit(make_request, access_token, _) for _ in range(num_requests)]
-            # Wait for all threads to finish before starting new ones
-            # concurrent.futures.wait(futures)
-            # time.sleep(1)  # Add a small sleep to avoid excessive CPU usage
+    print("All requests submitted")
+    stop_container("my_python_app")
     
 if __name__ == "__main__":
     main()
