@@ -44,7 +44,7 @@ def main():
         return
     
     # Number of parallel requests
-    num_requests = 10000
+    num_requests = 1000000000
 
     # Set max_workers to a higher value
     max_workers = 6500
